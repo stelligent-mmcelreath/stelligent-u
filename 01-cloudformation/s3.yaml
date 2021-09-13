@@ -4,14 +4,20 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description:
   A template for creating a S3 bucket. 
 
+
 Parameters:
-  S3BucketParameter:
+  BucketName:
     Type: String
-    Default: "Mike-Uni-Training"
+    Description: The name of the S3 Bucket to create
+
+# Conditions:
+#   CreateS3Bucket: Equals
+#     - !Ref AWS::Region
+#     - us-east-1
 
 Resources:
    S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref S3BucketParameter
+      BucketName: !Join [ "-", [ !Ref AWS::AccountId, !Ref BucketName ] ]
     
