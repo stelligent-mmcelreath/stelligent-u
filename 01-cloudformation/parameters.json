@@ -1,0 +1,8 @@
+{
+"Parameters" : {
+    "S3BucketName" : {
+      "Type" : "String",
+      "Default" : "Mike-Uni-Training"
+    }
+  }
+}
