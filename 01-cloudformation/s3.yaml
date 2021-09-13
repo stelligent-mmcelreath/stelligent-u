@@ -4,9 +4,14 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description:
   A template for creating a S3 bucket. 
 
+Parameters:
+  S3BucketParameter:
+    Type: String
+    Default: "Mike-Uni-Training"
+
 Resources:
    S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: "Mike-Uni-Training"
+      BucketName: !Ref S3BucketParameter
     
