@@ -5,16 +5,13 @@ Metadata:
   SupportedResources: 'IAM'
 Parameters:
   UserName:
-    Type: String
-    Default: 'mmcelreath'
-#     Type: 'AWS::SSM::Parameter::Value<String>'
-#     Description: 'Username taken from SSM Parameter Store'
-#     Default: '/mmcelreath/stelligent-u-01'
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Description: 'Username taken from SSM Parameter Store'
+    Default: '/mmcelreath/stelligent-u-01'
 Resources:
   NewIAMUser:
     Type: AWS::IAM::User
     Properties: 
-      # UserName: !Ref UserName
       UserName: !Ref UserName
   S3ManagedIAMPolicy:
     Type: 'AWS::IAM::ManagedPolicy'
