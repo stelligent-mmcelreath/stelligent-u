@@ -7,7 +7,7 @@ Metadata:
 Parameters:
   UserName:
     Type: String
-    Default: 'mmcelreath-stelli-u-cfn-usr-2'
+    Default: 'mmcelreath-lab-user2'
   PolicyStackName:
     Type: String
 Resources:
