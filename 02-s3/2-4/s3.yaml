@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'Minimal S3 bucket CFN template for stelligent-u'
+Description: 'S3 bucket training'
 Metadata:
   SupportedResources: 'S3'
 Parameters:
   BucketNameParam:
     Type: String
-    Description: 'S3 bucket training'
+    Description: 'Name parameter for the s3 bucket'
     Default: 'stelligent-u-michael.mcelreath.labs'
 Resources:
   SimpleBucket:
