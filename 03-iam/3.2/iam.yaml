@@ -1,0 +1,25 @@
+Description: 'IAM Role with IAM RO access for training'
+Metadata:
+  SupportedResources: 'IAM'
+Resources:
+  ReadAllRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: 'role for all all IAM reosurces'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: 'arn:aws:iam::324320755747:user/michael.mcelreath.labs'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns: 
+        - 'arn:aws:iam::aws:policy/ReadOnlyAccess'
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+Outputs:
+  ReadAllRoleARN:
+    Description: 'ARN of RO IAM role and full S3 access'
+    Value: !GetAtt ReadAllRole.Arn
+    Export:
+      Name: IAMReadOnlyRole

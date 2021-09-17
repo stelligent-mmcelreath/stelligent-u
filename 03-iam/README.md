@@ -167,6 +167,7 @@ _In Lab 3.1.5, you had to determine the Amazon resource Names (ARN) of the
 stack's two roles in order to pass those values to the CLI function. You
 probably used the AWS web console to get the ARN for each role. What
 could you have done to your CFN template to make that unnecessary?_
+`used an export of the role ARN` 
 
 #### Task: Stack Outputs
 
@@ -258,7 +259,8 @@ Clean up. Take the actions necessary to delete the stack.
 _In the context of an AWS User or Role, what is the difference between
 an inline policy and a customer managed policy? What are the differences
 between a customer managed policy and an AWS managed policy?_
-
+`CMP can be applied to multiple IAM entitties, inline policy applies to a single entity. AWS Managed Policies are created/managed by AWS e.g S3FullAccess. A Customer managed policy, is created/managed by the customer, e.g S3FUllAccss-Prod wherein a condition where a user would have access to only S3 buckets named *-Prod` 
+`
 #### Question: Role Assumption
 
 _When assuming a role, are the permissions of the initial principal
@@ -266,6 +268,7 @@ mixed with those of the role being assumed?
 Describe how that could easily be demonstrated with both a
 [positive and negative testing](https://www.guru99.com/positive-vs-negative-testing.html)
 approach._
+` No, Attach only EC2Admin policy to a user, the user would be able to launch a new instace. Now use that same user to assume a role with Ec2ReadOnly, the user would be unable to launch a new instance.` 
 
 ## Lesson 3.3: Fine-Grained Controls With Policies
 
@@ -321,8 +324,14 @@ read-only access to the other.
   - Upload a file to each new bucket.
 
 *Were there any errors? If so, take note of them.*
+```shell aws s3 cp test.txt s3://mmcelreath-training/test.txt
+ upload: ./test.txt to s3://mmcelreath-training/test.txt
+ aws s3 cp text.txt s3://mmcelreath-training-2/test.txt
+ upload failed: ./test.txt to s3://mmcelreath-training-2/test.txt An error occurred (AccessDenied) when calling the PutObject operation: Access Denied
+ ```
 
 *What were the results you expected, based on the role's policy?*
+`Uploading to the bucket with the role which had full access`
 
 #### Lab 3.3.3: Conditional restrictions
 
@@ -355,6 +364,7 @@ restrictions exhaustive? Did you consider additional [[positive and/or negative
 tests]](https://smartbear.com/learn/automated-testing/negative-testing/)
 that could be automated in order to confirm the permissions for the
 Role?_
+`No, listing objects with other prefixes`
 
 #### Task: Positive and Negative Tests
 
@@ -365,6 +375,7 @@ Code at least one new positive and one new negative test.
 _Is it possible to limit uploads of objects with a specific prefix (e.g.
 starting with "lebowski/") to an S3 bucket using IAM conditions? If not, how else
 could this be accomplished?_
+` Yes, with a StringEquals s3:prefix lebowski` 
 
 #### Task: Limiting Uploads
 
