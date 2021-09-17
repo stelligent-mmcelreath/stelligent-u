@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: ' S3 bucket training'
+Description: 'S3 bucket training'
 Metadata:
   SupportedResources: 'S3'
 Parameters:
   BucketNameParam:
     Type: String
-    Description: 'Friendly name parameter for the s3 bucket created by this template'
+    Description: 'Name parameter for the s3 bucket'
     Default: 'stelligent-u-michael.mcelreath.labs'
 Resources:
   SimpleBucket:
