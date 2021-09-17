@@ -1,0 +1,27 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  A template for creating a S3 bucket. 
+
+Metadata:
+  CreatedBy: 'mmcelreath'
+  SupportedResources: 'S3'
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: The name of the S3 Bucket to create
+
+Conditions:
+  PreferredRegion: !Equals [ !Ref AWS::Region, 'us-east-2' ]
+
+Resources:
+  SimpleBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !If
+        - PreferredRegion
+        - !Join ['-', [!Ref AWS::AccountId, !Ref BucketName]]
+        - !Join ['-', [!Ref AWS::Region, !Ref BucketName]]
+    

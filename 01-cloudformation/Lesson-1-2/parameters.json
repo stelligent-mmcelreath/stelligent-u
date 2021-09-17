@@ -1,0 +1,10 @@
+[
+	{
+		"ParameterKey": "UserName",
+		"ParameterValue": "mmcelreath-cfn-user-2"
+	},
+	{
+		"ParameterKey": "PolicyStackName",
+		"ParameterValue": "Uni-training-mike"
+	}
+]
