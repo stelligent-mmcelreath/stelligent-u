@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Creates test EC2 instance for stelligent-u VPC labs'
+Parameters:
+  AmiId:
+    Description: 'EC2 AMI ID '
+    Type: String
+    Default: 'ami-0ff8a91507f77f867'
+  InstanceType:
+    Description: 'EC2 Instance type'
+    Type: String
+    Default: 't2.micro'
+  KeypairName:
+    Description: 'SSH key pair for EC2 instance'
+    Type: String
+    Default: 'mmcelreath-training'
+Metadata:
+  SupportedResources: 'EC2'
+Resources:
+  EC2Instance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      KeyName: !Ref KeypairName
+      BlockDeviceMappings: 
+      - DeviceName: "/dev/sdm"
+        Ebs: 
+          VolumeType: io1
+          Iops: 200
+          DeleteOnTermination: false
+          VolumeSize: 20
+      - DeviceName: "/dev/sdk"
+        NoDevice: {}
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: True
+        DeleteOnTermination: True
+        SubnetId:
+          !ImportValue training-public-subnet-id
+        DeviceIndex: '0'
+        GroupSet:
+          - Ref: InstanceSecurityGroup
+
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow ssh to client host
+      VpcId:
+        !ImportValue training-vpc-name
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: icmp 
+        FromPort: 8
+        ToPort: -1
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: icmp 
+        FromPort: 8
+        ToPort: -1
+        CidrIp: 0.0.0.0/0
+  MyEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref EC2Instance
+
+  PrivateEC2Instance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      KeyName: !Ref KeypairName
+      BlockDeviceMappings: 
+      - DeviceName: "/dev/sdm"
+        Ebs: 
+          VolumeType: io1
+          Iops: 200
+          DeleteOnTermination: false
+          VolumeSize: 20
+      - DeviceName: "/dev/sdk"
+        NoDevice: {}
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: False
+        DeleteOnTermination: True
+        SubnetId:
+          !ImportValue training-private-subnet-id
+        DeviceIndex: '0'
+        GroupSet:
+          - Ref: InstanceSecurityGroup

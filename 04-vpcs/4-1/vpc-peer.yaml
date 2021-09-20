@@ -1,0 +1,10 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Creats a VPC Peering between us-east-1 and us-west-2 vpcs'
+Resources:
+  VPCPeer:
+    Type: AWS::EC2::VPCPeeringConnection
+    Properties: 
+      PeerOwnerId: "324320755747"
+      PeerRegion: us-east-1
+      PeerVpcId: vpc-0f7fb006d2f14082e
+      VpcId: vpc-0da5746e7ee65ce40
