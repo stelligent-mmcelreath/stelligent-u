@@ -92,14 +92,19 @@ Describe these instance attributes by querying the Cloud9 environment's
 
 - the image snapshot, or Amazon Machine Image (AMI), the instance was
   launched from
+  `curl 169.254.169.254/latest/meta-data/ami-id/`
 
 - the Type of instance created from that AMI
+`curl 169.254.169.254/latest/meta-data/instance-type`
 
 - the public IPV4 IP address
+`curl 169.254.169.254/latest/meta-data/public-ipv4/`
 
 - the Security Groups the instance is associated with
+`curl 169.254.169.254/latest/meta-data/security-groups/`
 
 - the networking Subnet ID the instance was launched into
+curl 169.254.169.254/latest/meta-data/network/interfaces/macs/0a:c2:43:c1:25:e7/subnet-id
 
 Save your queries (but not the outputs) in your source code.
 
