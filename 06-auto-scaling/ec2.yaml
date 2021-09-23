@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Creates test EC2 instance for stelligent-u ASG lab'
+Parameters:
+  LinuxAmiId:
+    Description: 'Debian EC2 AMI ID '
+    Type: String
+    Default: 'ami-0f643787e21058389'
+  InstanceType:
+    Description: 'EC2 Instance type'
+    Type: String
+    Default: 't2.medium'
+  KeypairName:
+    Description: 'SSH key pair for EC2 instance'
+    Type: String
+    Default: 'mmcelreath-training'
+Resources:
+   ASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: True
+    Properties:
+      MinSize: '1'
+      MaxSize: '2'
+      DesiredCapacity: '1'
+      AvailabilityZones: !GetAZs us-east-1
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LinuxLaunchTemplate
+        Version: !GetAtt LinuxLaunchTemplate.LatestVersionNumber
+
+   LinuxLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateData:
+        InstanceType: !Ref InstanceType
+        ImageId: !Ref LinuxAmiId
+        KeyName: mmcelreath-training
+
+   CPUPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref ASG
+      PolicyType: TargetTrackingScaling
+      TargetTrackingConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ASGAverageCPUUtilization
+        TargetValue: 60
+
+   CpuLow:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale-down if CPU < 40% for 2 minutes
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 120
+      EvaluationPeriods: 2
+      Threshold: 60
+      AlarmActions: [!Ref ScaleDownPolicy]
+      Dimensions:
+      - Name: AutoScalingGroupName
+        Value: !Ref ASG
+      ComparisonOperator: LessThanThreshold
+
+   ScaleDownPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName: !Ref ASG
+      ScalingAdjustment: -1
