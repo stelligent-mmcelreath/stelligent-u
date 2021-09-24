@@ -68,6 +68,7 @@ many instances with an ALB.
 
 _What is the benefit of breaking up the load balancer into specific listeners
 and target groups?_
+`Makes things like blue/greens and canary deploys possible `
 
 #### Lab 7.1.2: Health Checks
 
@@ -91,10 +92,12 @@ haywire!
 
 _What can be controlled with the interval/healthy threshold/unhealthy threshold
 settings?_
+`How long a health check fails` 
 
 ##### Question: ASG Behavior
 
 _What's happening to the instances in the ASG? How do you know?_
+`They're being terminated because of the failing healthchecks. 502 error is a good indicator, or the status of the instance.` 
 
 #### Lab 7.1.3: Secure Sockets
 
@@ -121,11 +124,13 @@ Let's fix that bad health check endpoint and add an https listener.
 ##### Question: SSL Policy
 
 _What is the trade off of going with a more secure SSL policy?_
+`Less compability` 
 
 ##### Question: Certificate Management
 
 _We imported a local certificate into ACM, what other options do you have? How
 do those processes work?_
+`ACM issued certs, a DNS entry or email confirmation of a domain you own. Or Importing a cert for a proper CA` 
 
 #### Lab 7.1.4: Cleanup
 
