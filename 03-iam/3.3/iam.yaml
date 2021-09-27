@@ -11,7 +11,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: 'arn:aws:iam::324320755747:user/michael.mcelreath.labs'
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:user/michael.mcelreath.labs
             Action:
               - 'sts:AssumeRole'
   RolePolicies:
@@ -26,33 +26,33 @@ Resources:
             Action: 
               - "s3:Put*"
             Resource: 
-              - !Join ['',['arn:aws:s3:::', !Ref s3Bucket, '/lebowski/*']]
+              - !Join ['',['arn:aws:s3:::', !Ref S3Bucket, '/lebowski/*']]
           - Effect: Allow
             Action: 
               - "s3:Get*"
               - "s3:List*"
             Resource: 
-              - !Join ['',['arn:aws:s3:::', !Ref s3Bucket, '/*']]
-              - !Join ['',['arn:aws:s3:::', !Ref s3Bucket]]
+              - !Join ['',['arn:aws:s3:::', !Ref S3Bucket, '/*']]
+              - !Join ['',['arn:aws:s3:::', !Ref S3Bucket]]
           - Effect: Allow
             Action: 
               - "s3:Get*"
               - "s3:List*"
             Resource: 
-              - !Join ['',['arn:aws:s3:::', !Ref s3Bucket2, '/*']]
-              - !Join ['',['arn:aws:s3:::', !Ref s3Bucket2]]
+              - !Join ['',['arn:aws:s3:::', !Ref S3Bucket2, '/*']]
+              - !Join ['',['arn:aws:s3:::', !Ref S3Bucket2]]
             Condition:
               StringLike: 
                 s3:prefix: 
                   - 'lebowski/*'
       Roles:
         - Ref: 'S3FullAccess'     
-  s3Bucket:
+  S3Bucket:
     Type: AWS::S3::Bucket
     Properties: 
       BucketName: 'mmcelreath-training'
 
-  s3Bucket2:
+  S3Bucket2:
     Type: AWS::S3::Bucket
     Properties: 
       BucketName: 'mmcelreath-training-2'
