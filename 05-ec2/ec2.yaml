@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Creates test EC2 instance for stelligent-u labs'
+Parameters:
+  LinuxAmiId:
+    Description: 'Linux EC2 AMI ID '
+    Type: String
+    Default: 'ami-0133407e358cc1af0'
+  InstanceType:
+    Description: 'EC2 Instance type'
+    Type: String
+    Default: 't2.micro'
+  SnapShotID:
+    Description: "ID of the snapshot"
+    Type: String
+    Default: ''
+  KeypairName:
+    Description: 'SSH key pair for EC2 instance'
+    Type: String
+    Default: 'mmcelreath-training'
+  AMIRestore:
+    Description: "The AMI to restore to"
+    Type: String
+    Default: ""
+Metadata:
+  SupportedResources: 'EC2'
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties: 
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LinuxLaunchTemplate
+        Version: !GetAtt LinuxLaunchTemplate.LatestVersionNumber
+      IamInstanceProfile: !Ref InstanceProfile
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files: "/opt/aws/amazon-cloudwatch-agent/bin/config.json"
+
+  LinuxLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateData:
+       InstanceType: !Ref InstanceType
+       ImageId: !Ref LinuxAmiId
+       SecurityGroups: 
+        - !Ref ICMPSG
+       KeyName: mmcelreath-training
+       
+       UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            export CLOUDWATCH_CONFIG_FILE_DIRECTORY="/opt/aws/amazon-cloudwatch-agent/bin/config.json"
+            apt-get update -y
+            apt-get install unzip -y 
+            wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
+
+            unzip AmazonCloudWatchAgent.zip
+            sudo ./install.sh
+
+            cat <<EOT >> $CLOUDWATCH_CONFIG_FILE_DIRECTORY
+            {
+              "agent": {
+                  "metrics_collection_interval": 60,
+                  "run_as_user": "cwagent"
+              },
+              "metrics": {
+                  "append_dimensions": {
+                    "AutoScalingGroupName": "\${!aws:AutoScalingGroupName}",
+                    "ImageId": "\${!aws:ImageId}",
+                    "InstanceId": "\${!aws:InstanceId}",
+                    "InstanceType": "\${!aws:InstanceType}"
+                  },
+                  "metrics_collected": {
+                    "disk": {
+                      "measurement": [
+                        "used_percent"
+                    ],
+                    "metrics_collection_interval": 60,
+                      "resources": [
+                          "*"
+                    ]
+                  },
+                  "mem": {
+                      "measurement": [
+                        "mem_used_percent"
+                      ],
+                      "metrics_collection_interval": 60
+                  }
+                }
+              }
+            }
+            EOT
+            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:"$CLOUDWATCH_CONFIG_FILE_DIRECTORY" -s
+            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status
+            /opt/aws/bin/cfn-signal -e $? 
+
+      LaunchTemplateName: Training-Template
+
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties: 
+      InstanceId: !Ref EC2Instance
+
+  ICMPSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow ping to client host
+      SecurityGroupIngress:
+      - IpProtocol: icmp 
+        FromPort: 8
+        ToPort: -1
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 64.82.252.104/32
+
+  IAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy  
+  
+  InstanceProfile: 
+    Type: "AWS::IAM::InstanceProfile"
+    Properties: 
+      Roles: 
+        - !Ref IAMRole
+
+  EC2Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+      Encrypted: false
+      Size: 20
+    
+  EC2VolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties: 
+      Device: /dev/sdf
+      InstanceId: !Ref EC2Instance
+      VolumeId: !Ref EC2Volume
+
+Outputs:
+  ElasticIP:
+    Value: !Ref EIP
