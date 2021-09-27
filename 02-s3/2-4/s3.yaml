@@ -7,8 +7,12 @@ Parameters:
     Type: String
     Description: 'Name parameter for the s3 bucket'
     Default: 'stelligent-u-michael.mcelreath.labs'
+  KmsKeyArn:
+    Type: String
+    Description: "The ARN of the default KMS key"
+    Default: "arn:aws:kms:us-west-2:324320755747:key/6adc2c83-1b8f-47b4-802c-ef02fde3615c"
 Resources:
-  SimpleBucket:
+  Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Join ['-', [!Ref AWS::Region, !Ref AWS::AccountId, !Ref BucketNameParam]]
@@ -16,7 +20,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
              SSEAlgorithm: 'aws:kms'
-             KMSMasterKeyID: 'arn:aws:kms:us-west-2:324320755747:key/6adc2c83-1b8f-47b4-802c-ef02fde3615c' 
+             KMSMasterKeyID: !Ref KmsKeyArn
       VersioningConfiguration:
         Status: Enabled
       LifecycleConfiguration:
@@ -31,10 +35,10 @@ Resources:
             NoncurrentVersionExpirationInDays: 7
             AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 1
-  PublicReadBucketPolicy:
+  BucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
-      Bucket: !Ref SimpleBucket
+      Bucket: !Ref Bucket
       PolicyDocument:
         Statement:
           - Action:
@@ -43,6 +47,6 @@ Resources:
             Resource: !Join
               - ''
               - - 'arn:aws:s3:::'
-                - !Ref SimpleBucket
+                - !Ref Bucket
                 - /*
             Principal: '*'
