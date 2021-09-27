@@ -120,21 +120,24 @@ Add an object to your bucket:
 ##### Question: Copying to Top Level
 
 _How would you copy the contents of the directory to the top level of your bucket?_
+ `aws s3 cp`
 
 ##### Question: Directory Copying
 
 _How would you copy the contents and include the directory name in the s3 object
 paths?_
-
+`aws s3 sync` 
 ##### Question: Object Access
 
 _[Can anyone else see your file yet](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-access-control.html)?_
+`No`
 
 For further reading, see the S3 [Access Policy Language Overview](https://docs.aws.amazon.com/AmazonS3/latest/dev/access-policy-language-overview.html).
 
 ##### Question: Sync vs Copy
 
 _What makes "sync" a better choice than "cp" for some S3 uploads?_
+`Sync copies over new and updates files` 
 
 #### Lab 2.1.3: Exclude Private Objects When Uploading to a Bucket
 
@@ -179,6 +182,7 @@ directory with the "aws s3 sync" command.
 
 _After this, can you download one of your files from the bucket without using
 your API credentials?_
+`Yes`
 
 #### Lab 2.2.2: Use the CLI to Restrict Access to Private Data
 
@@ -190,12 +194,13 @@ permissions of the other files.
 
 _How could you use "aws s3 cp" or "aws s3 sync" command to modify the
 permissions on the file?_
-
+`--acl (canned acl name)`
 (Hint: see the list of [Canned ACLs](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl).)
 
 ##### Question: Changing Permissions
 
 _Is there a way you can change the permissions on the file without re-uploading it?_
+`By syncing the same files and appending the --acl flag `
 
 #### Lab 2.2.3: Using the API from the CLI
 
@@ -223,10 +228,12 @@ file and read "private.txt".
 
 _What do you see when you try to read the existing bucket policy before you
 replace it?_
+`An empty policy?` 
 
 #### Question: Default Permissions
 
 _How do the default permissions differ from the policy you're setting?_
+`S3 permissions default to block all public access` 
 
 #### Lab 2.2.4: Using CloudFormation
 
@@ -294,11 +301,12 @@ Delete one of the objects that you changed.
 ##### Question: Deleted Object Versions
 
 _Can you still retrieve old versions of the object you removed?_
+`Yes`
 
 ##### Question: Deleting All Versions
 
 _How would you delete all versions?_
-
+`By putting all versions into a list and iterating over them and deleting them programmatically.`
 #### Lab 2.3.3: Tagging S3 Resources
 
 Tag one or more of your objects or buckets using "aws s3api", or add
@@ -309,6 +317,7 @@ through the CLI or the console.
 
 _Can you change a single tag on a bucket or object, or do you have to change
 all its tags at once?_
+`Yes you may change a single tag`
 
 (See `aws:cloudformation:stack-id` and other AWS-managed tags.)
 
@@ -330,6 +339,7 @@ _Management Lifecycle_ tab to double-check your settings.
 ##### Question: Improving Speed
 
 _Can you make any of these transitions more quickly?_
+`No S3 IA minimum is 30 days and Glacier is 90` 
 
 *See the [S3 lifecycle transitions doc](https://docs.aws.amazon.com/AmazonS3/latest/dev/lifecycle-transition-general-considerations.html).*
 
@@ -364,6 +374,7 @@ S3-managed key ("SSE-S3").
 ##### Question: Encrypting Existing Objects
 
 _Do you need to re-upload all your files to get them encrypted?_
+`Yes, enabeling encryption only applies to new uploads` 
 
 #### Lab 2.4.2: SSE with KMS Keys
 
@@ -392,6 +403,7 @@ What benefits might you gain by using a KMS key instead of an S3-managed key?_
 
 _Going further, what benefits might you gain by using a KMS key you created
 yourself?_
+`Cross account access for s3 objects, or rotate the key on your own schedule.` 
 
 #### Lab 2.4.3: Using Your Own KMS Key
 
@@ -412,6 +424,7 @@ Use your own KMS key to encrypt files in S3.
 ##### Question: CMK Alias
 
 _Can you use the alias when uploading files?_
+`Yes if in the same account` 
 
 ### Retrospective 2.4
 
@@ -419,10 +432,11 @@ _Can you use the alias when uploading files?_
 
 _After changing your bucket policy, can you upload files that aren't encrypted?
 If so, how would you require encryption on all files?_
-
+`Yes, by updating the policy to force Puts to be encrypted.`
 #### Question: Multiple Keys
 
 _Can you use different keys for different objects?_
+`Yes`
 
 ## Further Reading
 
