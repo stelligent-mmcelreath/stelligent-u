@@ -132,11 +132,13 @@ Launch an EC2 instance into your VPC.
 ##### Question: Post Launch
 
 _After you launch your new stack, can you ssh to the instance?_
+`No` 
 
 ##### Question: Verify Connectivity
 
 _Is there a way that you can verify Internet connectivity from the instance
 without ssh'ing to it?_
+`traceroute the IP` 
 
 #### Lab 4.1.5: Security Group
 
@@ -147,6 +149,7 @@ Add a security group to your EC2 stack:
 ##### Question: Connectivity
 
 _Can you ssh to your instance yet?_
+`No`
 
 #### Lab 4.1.6: Elastic IP
 
@@ -163,14 +166,17 @@ reachable from anywhere outside your VPC.
 ##### Question: Ping
 
 _Can you ping your instance now?_
+`Yes`
 
 ##### Question: SSH
 
 _Can you ssh into your instance now?_
+`Yes`
 
 ##### Question: Traffic
 
 _If you can ssh, can you send any traffic (e.g. curl) out to the Internet?_
+`Yes`
 
 At this point, you've made your public EC2 instance an [ssh bastion](https://docs.aws.amazon.com/quickstart/latest/linux-bastion/architecture.html).
 We'll make use of that to explore your network below.
@@ -199,20 +205,24 @@ existing instance stack.
 ##### Question: Access
 
 _Can you find a way to ssh to this instance?_
+`Yes via the bastion`  
 
 ##### Question: Egress
 
 _If you can ssh to it, can you send traffic out?_
+`Yes`
 
 ##### Question: Deleting the Gateway
 
 _If you delete the NAT gateway, what happens to the ssh session on your private
 instance?_
+`The session is still there`
 
 ##### Question: Recreating the Gateway
 
 _If you recreate the NAT gateway and detach the Elastic IP from the public EC2
 instance, can you still reach the instance from the outside?_
+`No, removing the EIP kills the session` 
 
 Test it out with the AWS console.
 
@@ -231,6 +241,7 @@ First, add one on the public subnet:
 ##### Question: EC2 Connection
 
 _Can you still reach your EC2 instances?_
+`Yes`
 
 Add another ACL to your private subnet:
 
@@ -299,11 +310,13 @@ Elastic IP.
 ##### Question: Public to Private
 
 _Can you ping this instance from the public instance you created earlier?_
+`Yes`
 
 ##### Question: Private to Public
 
 _Can you ping your public instance from this private instance? Which IPs are
 reachable, the public instance's private IP or its public IP, or both?_
+`Yes, both`
 
 Use traceroute to see where traffic flows to both the public and private IPs.
 
@@ -346,6 +359,7 @@ you to learn._
 #### Question: Corporate Networks
 
 _How would you integrate your VPC with a corporate network?_
+`Direct Connect` 
 
 ## Further Reading
 

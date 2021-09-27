@@ -1,0 +1,7 @@
+{
+    "Parameters" : {
+        "AmiId" : "ami-03e8f862f1241c4ed",
+        "InstanceType" : "t2.micro",
+        "KeyPairName" : "mmcelreath-training"
+        }
+      } 
