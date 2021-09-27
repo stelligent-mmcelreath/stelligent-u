@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'IAM Role with IAM RO access for training' 
+Metadata:
+  SupportedResources: 'IAM'
+Resources:
+  ReadAllRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: 'role for all all IAM reosurces'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: 'arn:aws:iam::324320755747:user/michael.mcelreath.labs'
+            Action:
+              - 'sts:AssumeRole'
+  RolePolicies:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: 'training-RO-IAM-Resources'
+      Description: 'policy to read all IAM resources'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 
+              - "iam:Get*"
+              - "iam:List*"
+            Resource: "*"
+      Roles:
+        - Ref: 'ReadAllRole' 
+        - Ref: 'ReadAllRole2'        
+  ReadAllRole2:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: 'Second IAM role to get IAM resources'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: 
+              AWS: 'arn:aws:iam::324320755747:user/michael.mcelreath.labs'
+            Action:
+              - 'sts:AssumeRole'
+Outputs:
+  RORoleARN:
+    Description: 'ARN of IAM role to get all IAM resources'
+    Value: !GetAtt ReadAllRole.Arn
+    Export:
+      Name: IAMReadOnlyRole
+  RORoleARN2:
+    Description: 'ARN of IAM role to get all IAM & EC2 resources'
+    Value: !GetAtt ReadAllRole2.Arn
+    Export:
+      Name: IAMEC2ReadOnlyROle
